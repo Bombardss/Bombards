@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bombards | ETRN Hub</title>
+    <style>
+        :root {
+            --cyan: #00f2ff;
+            --purple: #bc13fe;
+            --orange: #ffa500;
+            --day5-blue: #0066ff;
+            --bow-red: #ff0033;
+            --gold: #ffcc00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { background: #000; color: white; overflow-x: hidden; min-height: 200vh; }
+
+        /* --- GLOBAL BACKGROUNDS --- */
+        #bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -10; filter: brightness(0.25); }
+        #star-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -9; pointer-events: none; }
+        .theme-aura { position: fixed; inset: 0; z-index: -8; opacity: 0; transition: 0.8s; pointer-events: none; }
+        .p-aura { background: radial-gradient(circle, rgba(26, 0, 51, 0.7) 0%, #000 100%); }
+        .b-aura { background: radial-gradient(circle, rgba(0, 20, 51, 0.8) 0%, #000 100%); }
+        .r-aura { background: radial-gradient(circle, rgba(51, 0, 0, 0.8) 0%, #000 100%); }
+        .h-aura { background: radial-gradient(circle, rgba(0, 242, 255, 0.2) 0%, #000 100%); }
+        .hero-aura { background: radial-gradient(circle, rgba(255, 204, 0, 0.25) 0%, #000 100%); }
+
+        /* --- CORNER NAVIGATION --- */
+        .corner-btn { position: fixed; top: 25px; z-index: 500; padding: 12px 25px; background: rgba(0,0,0,0.6); font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .heal-pos { left: 25px; border: 2px solid var(--cyan); color: var(--cyan); clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); }
+        .hero-pos { right: 25px; border: 2px solid var(--gold); color: var(--gold); clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%); }
+        .corner-btn:hover { background: white; color: #000; box-shadow: 0 0 30px white; }
+
+        /* --- HERO --- */
+        section { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; position: relative; background: transparent !important; }
+        h1 { font-size: clamp(3.5rem, 15vw, 8.5rem); letter-spacing: 20px; text-transform: uppercase; text-shadow: 0 0 20px var(--cyan); margin: 0; animation: breathe 4s infinite ease-in-out; }
+        .etrn { color: var(--cyan); font-size: 1.8rem; letter-spacing: 15px; margin-bottom: 40px; font-weight: 800; }
+
+        .btn-stack { display: flex; flex-direction: column; gap: 15px; }
+        .btn { padding: 18px 60px; font-weight: bold; letter-spacing: 4px; cursor: pointer; transition: 0.4s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); text-transform: uppercase; background: rgba(0,0,0,0.6); }
+        .btn-std { border: 2px solid var(--purple); color: var(--purple); }
+        .btn-d5 { border: 2px solid var(--day5-blue); color: var(--day5-blue); }
+        .btn-bow { border: 2px solid var(--bow-red); color: var(--bow-red); }
+        .btn:hover { background: white; color: black; filter: brightness(1.2); transform: scale(1.05); }
+
+        /* --- RAINBOW NEON VORTEX LEGENDS --- */
+        .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; width: 100%; max-width: 1200px; perspective: 1000px; margin-top: 50px;}
+        .name-box { padding: 25px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); text-align: center; font-weight: 900; font-size: 1.3rem; border: 3px solid; animation: neonRainbow 5s linear infinite, rotate3D 6s linear infinite; }
+        @keyframes neonRainbow { 0% { border-color: #f00; color: #f00; box-shadow: 0 0 20px #f00; } 25% { border-color: #ff0; color: #ff0; } 50% { border-color: #0f0; color: #0f0; } 75% { border-color: #0ff; color: #0ff; } 100% { border-color: #f00; color: #f00; } }
+        @keyframes rotate3D { 0%, 100% { transform: rotateY(-15deg); } 50% { transform: rotateY(15deg); } }
+
+        /* --- OVERLAYS --- */
+        .overlay { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(50px); opacity: 0; transition: 0.5s ease; }
+        .overlay.active { display: flex; opacity: 1; }
+        .panel { width: 95%; max-width: 850px; padding: 40px; background: rgba(0,0,0,0.96); border-radius: 2px; }
+        
+        .ui-p { border: 2px solid var(--purple); box-shadow: 0 0 100px rgba(188, 19, 254, 0.4); }
+        .ui-b { border: 2px solid var(--day5-blue); box-shadow: 0 0 100px rgba(0, 102, 255, 0.4); }
+        .ui-r { border: 2px solid var(--bow-red); box-shadow: 0 0 100px rgba(255, 0, 51, 0.4); }
+        .ui-h { border: 2px solid var(--cyan); box-shadow: 0 0 100px rgba(0, 242, 255, 0.3); }
+        .ui-hero { border: 2px solid var(--gold); box-shadow: 0 0 100px rgba(255, 204, 0, 0.3); }
+
+        .in-row { display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .in-lbl { width: 130px; padding: 15px; background: rgba(255,255,255,0.05); font-size: 0.75rem; font-weight: bold; color: #888; text-transform: uppercase; }
+        input { flex: 1; background: transparent; border: none; color: white; padding: 15px; text-align: center; font-size: 1.4rem; outline: none; font-family: monospace; }
+
+        /* STRICT COLORS */
+        .t3 { color: var(--cyan) !important; }
+        .t4 { color: var(--purple) !important; }
+        .t5 { color: var(--orange) !important; font-weight: bold; }
+        .res-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: monospace; font-size: 1.3rem; }
+
+        .h-in { width: 100%; background: #111; border: 1px solid #222; color: white; padding: 15px; text-align: center; font-size: 1.4rem; }
+        .hero-lbl-mini { color: var(--gold); font-size: 0.75rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+
+        .exit { margin-top: 30px; cursor: pointer; display: block; text-align: center; letter-spacing: 5px; font-weight: bold; text-transform: uppercase; color: #555; }
+        .exit:hover { color: #fff; }
+
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop playsinline id="bg-video"><source src="gojo.mp4" type="video/mp4"></video>
+    <canvas id="star-canvas"></canvas>
+    <div id="aura-p" class="theme-aura p-aura"></div>
+    <div id="aura-b" class="theme-aura b-aura"></div>
+    <div id="aura-r" class="theme-aura r-aura"></div>
+    <div id="aura-h" class="theme-aura h-aura"></div>
+    <div id="aura-hero" class="theme-aura hero-aura"></div>
+
+    <button class="corner-btn heal-pos" onclick="openUI('healing')">Healing</button>
+    <button class="corner-btn hero-pos" onclick="openUI('hero')">Hero Calc</button>
+
+    <section>
+        <h1>BOMBARDS</h1>
+        <div class="etrn">ETRN</div>
+        <div class="btn-stack">
+            <button class="btn btn-std" onclick="openUI('standard')">Standard SLE</button>
+            <button class="btn btn-d5" onclick="openUI('day5')">SLE Day 5</button>
+            <button class="btn btn-bow" onclick="openUI('bow')">Brink of War</button>
+        </div>
+        <div style="position: absolute; bottom: 30px; color: var(--cyan); letter-spacing: 8px; animation: bounce 2s infinite;">▼ LEGENDS ▼</div>
+    </section>
+
+    <section id="legends">
+        <h2 style="color: var(--cyan); font-size: 2.5rem; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 60px; text-shadow: 0 0 20px var(--cyan); border-bottom: 2px solid var(--cyan); display: inline-block; padding-bottom: 10px;">Shoutout to these people</h2>
+        <div class="legend-grid">
+            <div class="name-box">OnlyCavs</div><div class="name-box">Yamipoli</div><div class="name-box">Enmir</div>
+            <div class="name-box">Hermes</div><div class="name-box">MythiCole</div><div class="name-box">Griffith</div>
+            <div class="name-box">Pierre</div><div class="name-box">Ali</div><div class="name-box">Bennse</div>
+            <div class="name-box">Wallace</div><div class="name-box">Sin</div><div class="name-box">Jacob</div>
+            <div class="name-box">Wimok</div><div class="name-box">Thorfdil</div><div class="name-box">Sakura</div>
+        </div>
+    </section>
+
+    <!-- EVENT CALC -->
+    <div id="event-overlay" class="overlay">
+        <div id="event-panel" class="panel">
+            <h2 id="event-title" style="text-align: center; margin-bottom: 30px; letter-spacing: 10px; font-size: 2rem;">CALCULATOR</h2>
+            <div class="in-row"><div class="in-lbl">Days</div><input type="number" id="v_d" value="111" oninput="runMath()"></div>
+            <div class="in-row"><div class="in-lbl">Hours</div><input type="number" id="v_h" value="16" oninput="runMath()"></div>
+            <div class="in-row"><div class="in-lbl">Minutes</div><input type="number" id="v_m" value="17" oninput="runMath()"></div>
+            <div class="in-row"><div class="in-lbl">Speedup</div><input type="number" id="v_s" value="70" oninput="runMath()"><span style="padding-right:20px; color:#444;">%</span></div>
+            <div style="margin-top: 40px;">
+                <div class="res-line"><div><span class="t4">T4</span><span style="color:#444; margin:0 10px;">→</span><span class="t5">T5</span></div> <div><span id="o1" class="t4"></span><span style="color:#555; font-size:0.8rem; margin-left:15px;" id="u1"></span></div></div>
+                <div class="res-line"><div><span class="t3">T3</span><span style="color:#444; margin:0 10px;">→</span><span class="t4">T4</span></div> <div><span id="o2" class="t3"></span><span style="color:#555; font-size:0.8rem; margin-left:15px;" id="u2"></span></div></div>
+                <div class="res-line"><span class="t5">T5 (Fresh)</span> <div><span id="o3" class="t5"></span><span style="color:#555; font-size:0.8rem; margin-left:15px;" id="u3"></span></div></div>
+                <div class="res-line"><span class="t4">T4 (Fresh)</span> <div><span id="o4" class="t4"></span><span style="color:#555; font-size:0.8rem; margin-left:15px;" id="u4"></span></div></div>
+                <div class="res-line"><span class="t3">T3 (Fresh)</span> <div><span id="o5" class="t3"></span><span style="color:#555; font-size:0.8rem; margin-left:15px;" id="u5"></span></div></div>
+            </div>
+            <span class="exit" onclick="closeUI()">EXIT SYSTEM</span>
+        </div>
+    </div>
+
+    <!-- HERO CALC (ORDER-BASED MATH) -->
+    <div id="hero-overlay" class="overlay">
+        <div class="panel ui-hero">
+            <h2 style="text-align: center; margin-bottom: 25px; letter-spacing: 5px; color: var(--gold); font-size: 2rem;">HERO SKILLS</h2>
+            
+            <div class="hero-lbl-mini">Current Skill Levels (e.g. 1 1 1 1)</div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
+                <input type="number" id="c1" class="h-in" value="1" min="1" max="5"><input type="number" id="c2" class="h-in" value="1" min="1" max="5"><input type="number" id="c3" class="h-in" value="1" min="1" max="5"><input type="number" id="c4" class="h-in" value="1" min="1" max="5">
+            </div>
+
+            <div class="hero-lbl-mini">Target Skill Levels (e.g. 5 5 5 5)</div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
+                <input type="number" id="t1" class="h-in" value="5" min="1" max="5"><input type="number" id="t2" class="h-in" value="5" min="1" max="5"><input type="number" id="t3" class="h-in" value="5" min="1" max="5"><input type="number" id="t4" class="h-in" value="5" min="1" max="5">
+            </div>
+
+            <div style="text-align: center; border-top: 1px solid #333; padding-top: 30px;">
+                <button class="btn btn-std" style="border-color:var(--gold); color:var(--gold); width:100%; margin-bottom:20px;" onclick="runHero()">CALCULATE TOKENS</button>
+                <span id="hero-result" style="font-size: 4rem; color: var(--gold); font-weight: 900;">0</span>
+                <p style="color: #666; font-size: 0.8rem; margin-top: 5px; letter-spacing: 2px;">TOKENS NEEDED</p>
+            </div>
+            <span class="exit" onclick="closeUI()">BACK TO BASE</span>
+        </div>
+    </div>
+
+    <!-- HEALING CALC HUD -->
+    <div id="heal-overlay" class="overlay">
+        <div class="panel ui-h" style="max-width: 900px;">
+            <h2 style="text-align: center; margin-bottom: 25px; color: var(--cyan); letter-spacing: 5px; font-size: 2rem;">HEALING CALCULATOR</h2>
+            <div style="display:grid; grid-template-columns: 80px repeat(5, 1fr); gap:10px; margin-bottom: 20px;">
+                <div></div><div style="font-size:0.6rem; color:#444; text-align:center;">Infantry</div><div style="font-size:0.6rem; color:#444; text-align:center;">Mage</div><div style="font-size:0.6rem; color:#444; text-align:center;">Archer</div><div style="font-size:0.6rem; color:#444; text-align:center;">Cavalry</div><div style="font-size:0.6rem; color:#444; text-align:center;">Flying</div>
+                <div class="t5">T5</div><input type="number" id="h5_i" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_m" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_a" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_c" class="h-in" value="2000" oninput="runHeal()"><input type="number" id="h5_f" class="h-in" value="0" oninput="runHeal()">
+                <div class="t4">T4</div><input type="number" id="h4_i" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_m" class="h-in" value="25000" oninput="runHeal()"><input type="number" id="h4_a" class="h-in" value="3000" oninput="runHeal()"><input type="number" id="h4_c" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_f" class="h-in" value="0" oninput="runHeal()">
+            </div>
+            <div class="in-row"><div class="in-lbl" style="width:200px; color:var(--cyan);">Reduction</div><input type="number" id="h_red" value="25" oninput="runHeal()"><span style="padding:15px; color:#444;">%</span></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; border-top:1px solid #222; padding-top:20px; font-size:1.4rem; font-family:monospace;">
+                <div>Gold: <span id="rg">0</span></div><div>Wood: <span id="rw">0</span></div><div>Ore: <span id="ro">0</span></div><div>Mana: <span id="rm">0</span></div>
+            </div>
+            <span class="exit" onclick="closeUI()">BACK TO BASE</span>
+        </div>
+    </div>
+
+    <script>
+        let mode = 'standard';
+        const canvas = document.getElementById('star-canvas'), ctx = canvas.getContext('2d');
+        let stars = [], comets = [];
+
+        const DB = {
+            t: { t5: 2.0, t4: 4/3, t3: 1.0, u5: 2/3, u4: 1/3 },
+            standard: { t5: 100, t4: 40, t3: 20, u5: 60, u4: 20 },
+            day5:     { t5: 80,  t4: 32, t3: 16, u5: 48, u4: 16 },
+            bow:      { t5: 40,  t4: 16, t3: 8,  u5: 24, u4: 8  }
+        };
+
+        const H_DATA = {
+            t4: { i:{g:90,w:90,o:0,m:30}, m:{g:0,w:90,o:67.5,m:30}, a:{g:90,w:0,o:67.5,m:30}, c:{g:54,w:54,o:54,m:30}, f:{g:54,w:54,o:54,m:30} },
+            t5: { i:{g:240,w:240,o:0,m:120}, m:{g:0,w:240,o:180,m:120}, a:{g:240,w:0,o:180,m:120}, c:{g:144,w:144,o:144,m:120}, f:{g:144,w:144,o:144,m:120} }
+        };
+
+        // --- HERO COST SEQUENCE ---
+        // Cost per individual upgrade step (from level 1-1-1-1)
+        const HERO_STEP_COSTS = [10, 10, 15, 15, 30, 30, 40, 40, 45, 45, 50, 50, 75, 75, 80, 80];
+
+        function runMath() {
+            const tm = (parseFloat(document.getElementById('v_d').value)||0)*1440 + (parseFloat(document.getElementById('v_h').value)||0)*60 + (parseFloat(document.getElementById('v_m').value)||0);
+            const b = tm * (1 + (parseFloat(document.getElementById('v_s').value)||0)/100);
+            const p = DB[mode];
+            const f = (k, pk, id_p, id_u) => { const u = Math.floor(b / DB.t[k]); document.getElementById(id_p).innerText = (u * p[pk]).toLocaleString() + " Points"; document.getElementById(id_u).innerText = `|| ${u.toLocaleString()} Units`; };
+            f('u5','u5','o1','u1'); f('u4','u4','o2','u2'); f('t5','t5','o3','u3'); f('t4','t4','o4','u4'); f('t3','t3','o5','u5');
+        }
+
+        function runHeal() {
+            const r = (100 - (parseFloat(document.getElementById('h_red').value)||0))/100;
+            let g=0, w=0, o=0, m=0;
+            ['i','m','a','c','f'].forEach(k => {
+                const c4 = parseFloat(document.getElementById('h4_'+k).value)||0, c5 = parseFloat(document.getElementById('h5_'+k).value)||0;
+                g += (c4*H_DATA.t4[k].g + c5*H_DATA.t5[k].g)*r; w += (c4*H_DATA.t4[k].w + c5*H_DATA.t5[k].w)*r; o += (c4*H_DATA.t4[k].o + c5*H_DATA.t5[k].o)*r; m += (c4*H_DATA.t4[k].m + c5*H_DATA.t5[k].m)*r;
+            });
+            document.getElementById('rg').innerText = Math.floor(g).toLocaleString(); document.getElementById('rw').innerText = Math.floor(w).toLocaleString(); document.getElementById('ro').innerText = Math.floor(o).toLocaleString(); document.getElementById('rm').innerText = Math.floor(m).toLocaleString();
+        }
+
+        function runHero() {
+            // Get total level current vs target
+            const curSum = (parseInt(document.getElementById('c1').value)||1) + (parseInt(document.getElementById('c2').value)||1) + (parseInt(document.getElementById('c3').value)||1) + (parseInt(document.getElementById('c4').value)||1);
+            const tarSum = (parseInt(document.getElementById('t1').value)||1) + (parseInt(document.getElementById('t2').value)||1) + (parseInt(document.getElementById('t3').value)||1) + (parseInt(document.getElementById('t4').value)||1);
+            
+            // Map sums to array indices (Starting 1-1-1-1 is index 0)
+            const startIndex = curSum - 4;
+            const endIndex = tarSum - 4;
+            
+            let total = 0;
+            if (endIndex > startIndex) {
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (HERO_STEP_COSTS[i]) total += HERO_STEP_COSTS[i];
+                }
+            }
+            
+            document.getElementById('hero-result').innerText = total.toLocaleString();
+        }
+
+        function openUI(m) {
+            mode = m; 
+            document.getElementById('event-overlay').style.display = (m==='standard'||m==='day5'||m==='bow')?'flex':'none';
+            document.getElementById('heal-overlay').style.display = (m==='healing')?'flex':'none';
+            document.getElementById('hero-overlay').style.display = (m==='hero')?'flex':'none';
+            
+            const pnl = document.getElementById('event-panel'); const tit = document.getElementById('event-title');
+            if(m==='standard'){ pnl.className='panel ui-p'; tit.style.color='var(--purple)'; document.getElementById('aura-p').style.opacity='1'; runMath(); }
+            else if(m==='day5'){ pnl.className='panel ui-b'; tit.style.color='var(--day5-blue)'; document.getElementById('aura-b').style.opacity='1'; runMath(); }
+            else if(m==='bow'){ pnl.className='panel ui-r'; tit.style.color='var(--bow-red)'; document.getElementById('aura-r').style.opacity='1'; runMath(); }
+            else if(m==='healing'){ document.getElementById('aura-h').style.opacity='1'; runHeal(); }
+            else if(m==='hero'){ document.getElementById('aura-hero').style.opacity='1'; runHero(); }
+
+            document.querySelectorAll('.overlay').forEach(o => { if(o.style.display==='flex') setTimeout(()=>o.classList.add('active'),10); });
+        }
+
+        function closeUI() { document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active')); document.querySelectorAll('.theme-aura').forEach(a => a.style.opacity = '0'); setTimeout(() => document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'), 500); }
+
+        function init() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<400; i++) stars.push({ x: Math.random()*canvas.width-canvas.width/2, y: Math.random()*canvas.height-canvas.height/2, z: Math.random()*canvas.width, b: Math.random()>0.75 });
+        }
+
+        function draw() {
+            ctx.fillStyle = "rgba(0,0,0,0.15)"; ctx.fillRect(0,0,canvas.width, canvas.height);
+            const act = document.querySelector('.overlay.active');
+            let spd = act ? 2.8 : (0.5 + window.scrollY / 22);
+            ctx.save(); ctx.translate(canvas.width/2, canvas.height/2);
+            stars.forEach(s => {
+                s.z -= spd; if(s.z <= 0) { s.z = canvas.width; s.x = Math.random()*canvas.width-canvas.width/2; s.y = Math.random()*canvas.height-canvas.height/2; }
+                let x = s.x*(canvas.width/s.z), y = s.y*(canvas.width/s.z), r = Math.max(0, (1 - s.z / canvas.width) * 2.5);
+                ctx.beginPath();
+                if(act) {
+                    if(mode==='standard') ctx.fillStyle="#bc13fe"; else if(mode==='day5') ctx.fillStyle="#0066ff";
+                    else if(mode==='bow') ctx.fillStyle="#ff0033"; else if(mode==='hero') ctx.fillStyle="#ffcc00"; else ctx.fillStyle="#00f2ff";
+                } else ctx.fillStyle="#00f2ff";
+                if(s.b) { ctx.shadowBlur=15; ctx.shadowColor=ctx.fillStyle; } else ctx.shadowBlur=0;
+                ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+            });
+            if(Math.random() > 0.985) comets.push({ x: -canvas.width/2, y: Math.random()*canvas.height-canvas.height/2, v: Math.random()*30+20 });
+            ctx.strokeStyle = act ? (mode==='hero'?"#ffcc00":"#bc13fe") : "#bc13fe";
+            ctx.lineWidth = 2;
+            comets.forEach((c, i) => {
+                c.x += c.v; c.y += c.v/2; ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x - 120, c.y - 60); ctx.stroke();
+                if(c.x > canvas.width) comets.splice(i, 1);
+            });
+            ctx.restore(); requestAnimationFrame(draw);
+        }
+        window.onresize = init; init(); draw();
+    </script>
+</body>
+</html>
