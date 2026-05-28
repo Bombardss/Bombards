@@ -80,6 +80,9 @@
 
         @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} }
+        
+        /* NEW COUNTER STYLE */
+        #live-counter { margin: 50px 0; padding: 15px 30px; border: 1px solid var(--cyan); color: var(--cyan); font-weight: 900; letter-spacing: 4px; text-transform: uppercase; font-size: 1.2rem; text-shadow: 0 0 10px var(--cyan); display: inline-block; background: rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
@@ -115,6 +118,9 @@
             <div class="name-box">Wallace</div><div class="name-box">Sin</div><div class="name-box">Jacob</div>
             <div class="name-box">Wimok</div><div class="name-box">Thorfdil</div><div class="name-box">Sakura</div>
         </div>
+        
+        <!-- NEW COUNTER DISPLAY -->
+        <div id="live-counter">Establishing Connection...</div>
     </section>
 
     <!-- EVENT CALC -->
@@ -157,7 +163,7 @@
         </div>
     </div>
 
-    <!-- HEALING CALC -->
+    <!-- HEALING CALC HUD -->
     <div id="heal-overlay" class="overlay">
         <div class="panel ui-h" style="max-width: 900px;">
             <h2 style="text-align: center; margin-bottom: 25px; color: var(--cyan); letter-spacing: 5px; font-size: 2rem;">HEALING CALCULATOR</h2>
@@ -172,11 +178,6 @@
             </div>
             <span class="exit" onclick="closeUI()">BACK TO BASE</span>
         </div>
-    </div>
-
-    <!-- 24-HOUR UNIQUE VISITOR COUNTER -->
-    <div style="text-align: center; padding: 40px; opacity: 0.8;">
-        <img src="https://komarev.com/ghpvc/?username=Bombardss&repo=Bombards-Final-Tracker&color=00f2ff&style=flat-square&label=HUB+VISITORS" alt="Views">
     </div>
 
     <script>
@@ -235,14 +236,12 @@
             document.getElementById('event-overlay').style.display = (m==='standard'||m==='day5'||m==='bow')?'flex':'none';
             document.getElementById('heal-overlay').style.display = (m==='healing')?'flex':'none';
             document.getElementById('hero-overlay').style.display = (m==='hero')?'flex':'none';
-            
             const pnl = document.getElementById('event-panel'); const tit = document.getElementById('event-title');
             if(m==='standard'){ pnl.className='panel ui-p'; tit.style.color='var(--purple)'; document.getElementById('aura-p').style.opacity='1'; runMath(); }
             else if(m==='day5'){ pnl.className='panel ui-b'; tit.style.color='var(--day5-blue)'; document.getElementById('aura-b').style.opacity='1'; runMath(); }
             else if(m==='bow'){ pnl.className='panel ui-r'; tit.style.color='var(--bow-red)'; document.getElementById('aura-r').style.opacity='1'; runMath(); }
             else if(m==='healing'){ document.getElementById('aura-h').style.opacity='1'; runHeal(); }
             else if(m==='hero'){ document.getElementById('aura-hero').style.opacity='1'; runHero(); }
-
             document.querySelectorAll('.overlay').forEach(o => { if(o.style.display==='flex') setTimeout(()=>o.classList.add('active'),10); });
         }
 
@@ -279,6 +278,19 @@
             ctx.restore(); requestAnimationFrame(draw);
         }
         window.onresize = init; init(); draw();
+
+        // --- NEW NO-CHEATING COUNTER LOGIC ---
+        async function updateCounter() {
+            const hasVisited = localStorage.getItem('bombards_v');
+            const url = hasVisited ? 'https://api.counterapi.dev/v1/bombardss_hub_unique/visits' : 'https://api.counterapi.dev/v1/bombardss_hub_unique/visits/up';
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                document.getElementById('live-counter').innerText = "HUB VISITORS: " + data.count;
+                localStorage.setItem('bombards_v', 'true');
+            } catch(e) { document.getElementById('live-counter').style.display = 'none'; }
+        }
+        updateCounter();
     </script>
 </body>
 </html>
