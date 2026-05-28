@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -121,10 +121,10 @@
     <div id="event-overlay" class="overlay">
         <div id="event-panel" class="panel">
             <h2 id="event-title" style="text-align: center; margin-bottom: 30px; letter-spacing: 10px; font-size: 2rem;">CALCULATOR</h2>
-            <div class="in-row"><div class="in-lbl">Days</div><input type="number" id="v_d" value="111" oninput="runMath()"></div>
-            <div class="in-row"><div class="in-lbl">Hours</div><input type="number" id="v_h" value="16" oninput="runMath()"></div>
-            <div class="in-row"><div class="in-lbl">Minutes</div><input type="number" id="v_m" value="17" oninput="runMath()"></div>
-            <div class="in-row"><div class="in-lbl">Speedup</div><input type="number" id="v_s" value="70" oninput="runMath()"><span style="padding-right:20px; color:#444;">%</span></div>
+            <div class="in-row"><div class="in-lbl">Days</div><input type="number" id="v_d" value="0" oninput="runMath()"></div>
+            <div class="in-row"><div class="in-lbl">Hours</div><input type="number" id="v_h" value="0" oninput="runMath()"></div>
+            <div class="in-row"><div class="in-lbl">Minutes</div><input type="number" id="v_m" value="0" oninput="runMath()"></div>
+            <div class="in-row"><div class="in-lbl">Speedup</div><input type="number" id="v_s" value="0" oninput="runMath()"><span style="padding-right:20px; color:#444;">%</span></div>
             <div style="margin-top: 40px;">
                 <div class="res-line"><div><span class="t4">T4</span><span style="color:#444; margin:0 10px;">→</span><span class="t5">T5</span></div> <div><span id="o1" class="t4"></span><span style="color:#555; font-size:0.8rem; margin-left:15px;" id="u1"></span></div></div>
                 <div class="res-line"><div><span class="t3">T3</span><span style="color:#444; margin:0 10px;">→</span><span class="t4">T4</span></div> <div><span id="o2" class="t3"></span><span style="color:#555; font-size:0.8rem; margin-left:15px;" id="u2"></span></div></div>
@@ -136,21 +136,18 @@
         </div>
     </div>
 
-    <!-- HERO CALC (ORDER-BASED MATH) -->
+    <!-- HERO CALC -->
     <div id="hero-overlay" class="overlay">
         <div class="panel ui-hero">
             <h2 style="text-align: center; margin-bottom: 25px; letter-spacing: 5px; color: var(--gold); font-size: 2rem;">HERO SKILLS</h2>
-            
             <div class="hero-lbl-mini">Current Skill Levels (e.g. 1 1 1 1)</div>
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
                 <input type="number" id="c1" class="h-in" value="1" min="1" max="5"><input type="number" id="c2" class="h-in" value="1" min="1" max="5"><input type="number" id="c3" class="h-in" value="1" min="1" max="5"><input type="number" id="c4" class="h-in" value="1" min="1" max="5">
             </div>
-
             <div class="hero-lbl-mini">Target Skill Levels (e.g. 5 5 5 5)</div>
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
                 <input type="number" id="t1" class="h-in" value="5" min="1" max="5"><input type="number" id="t2" class="h-in" value="5" min="1" max="5"><input type="number" id="t3" class="h-in" value="5" min="1" max="5"><input type="number" id="t4" class="h-in" value="5" min="1" max="5">
             </div>
-
             <div style="text-align: center; border-top: 1px solid #333; padding-top: 30px;">
                 <button class="btn btn-std" style="border-color:var(--gold); color:var(--gold); width:100%; margin-bottom:20px;" onclick="runHero()">CALCULATE TOKENS</button>
                 <span id="hero-result" style="font-size: 4rem; color: var(--gold); font-weight: 900;">0</span>
@@ -160,21 +157,26 @@
         </div>
     </div>
 
-    <!-- HEALING CALC HUD -->
+    <!-- HEALING CALC -->
     <div id="heal-overlay" class="overlay">
         <div class="panel ui-h" style="max-width: 900px;">
             <h2 style="text-align: center; margin-bottom: 25px; color: var(--cyan); letter-spacing: 5px; font-size: 2rem;">HEALING CALCULATOR</h2>
             <div style="display:grid; grid-template-columns: 80px repeat(5, 1fr); gap:10px; margin-bottom: 20px;">
                 <div></div><div style="font-size:0.6rem; color:#444; text-align:center;">Infantry</div><div style="font-size:0.6rem; color:#444; text-align:center;">Mage</div><div style="font-size:0.6rem; color:#444; text-align:center;">Archer</div><div style="font-size:0.6rem; color:#444; text-align:center;">Cavalry</div><div style="font-size:0.6rem; color:#444; text-align:center;">Flying</div>
-                <div class="t5">T5</div><input type="number" id="h5_i" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_m" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_a" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_c" class="h-in" value="2000" oninput="runHeal()"><input type="number" id="h5_f" class="h-in" value="0" oninput="runHeal()">
-                <div class="t4">T4</div><input type="number" id="h4_i" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_m" class="h-in" value="25000" oninput="runHeal()"><input type="number" id="h4_a" class="h-in" value="3000" oninput="runHeal()"><input type="number" id="h4_c" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_f" class="h-in" value="0" oninput="runHeal()">
+                <div class="t5">T5</div><input type="number" id="h5_i" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_m" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_a" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_c" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h5_f" class="h-in" value="0" oninput="runHeal()">
+                <div class="t4">T4</div><input type="number" id="h4_i" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_m" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_a" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_c" class="h-in" value="0" oninput="runHeal()"><input type="number" id="h4_f" class="h-in" value="0" oninput="runHeal()">
             </div>
-            <div class="in-row"><div class="in-lbl" style="width:200px; color:var(--cyan);">Reduction</div><input type="number" id="h_red" value="25" oninput="runHeal()"><span style="padding:15px; color:#444;">%</span></div>
+            <div class="in-row"><div class="in-lbl" style="width:200px; color:var(--cyan);">Reduction</div><input type="number" id="h_red" value="0" oninput="runHeal()"><span style="padding:15px; color:#444;">%</span></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; border-top:1px solid #222; padding-top:20px; font-size:1.4rem; font-family:monospace;">
                 <div>Gold: <span id="rg">0</span></div><div>Wood: <span id="rw">0</span></div><div>Ore: <span id="ro">0</span></div><div>Mana: <span id="rm">0</span></div>
             </div>
             <span class="exit" onclick="closeUI()">BACK TO BASE</span>
         </div>
+    </div>
+
+    <!-- VIEW COUNTER (Corrected Username: Bombardss) -->
+    <div style="text-align: center; padding: 40px; opacity: 0.4;">
+        <img src="https://hits.dwyl.com/Bombardss/etrn-hub.svg" alt="Views">
     </div>
 
     <script>
@@ -194,8 +196,6 @@
             t5: { i:{g:240,w:240,o:0,m:120}, m:{g:0,w:240,o:180,m:120}, a:{g:240,w:0,o:180,m:120}, c:{g:144,w:144,o:144,m:120}, f:{g:144,w:144,o:144,m:120} }
         };
 
-        // --- HERO COST SEQUENCE ---
-        // Cost per individual upgrade step (from level 1-1-1-1)
         const HERO_STEP_COSTS = [10, 10, 15, 15, 30, 30, 40, 40, 45, 45, 50, 50, 75, 75, 80, 80];
 
         function runMath() {
@@ -217,21 +217,12 @@
         }
 
         function runHero() {
-            // Get total level current vs target
             const curSum = (parseInt(document.getElementById('c1').value)||1) + (parseInt(document.getElementById('c2').value)||1) + (parseInt(document.getElementById('c3').value)||1) + (parseInt(document.getElementById('c4').value)||1);
             const tarSum = (parseInt(document.getElementById('t1').value)||1) + (parseInt(document.getElementById('t2').value)||1) + (parseInt(document.getElementById('t3').value)||1) + (parseInt(document.getElementById('t4').value)||1);
-            
-            // Map sums to array indices (Starting 1-1-1-1 is index 0)
-            const startIndex = curSum - 4;
-            const endIndex = tarSum - 4;
-            
+            const startIndex = Math.max(0, curSum - 4);
+            const endIndex = Math.min(HERO_STEP_COSTS.length, tarSum - 4);
             let total = 0;
-            if (endIndex > startIndex) {
-                for (let i = startIndex; i < endIndex; i++) {
-                    if (HERO_STEP_COSTS[i]) total += HERO_STEP_COSTS[i];
-                }
-            }
-            
+            for (let i = startIndex; i < endIndex; i++) { total += HERO_STEP_COSTS[i]; }
             document.getElementById('hero-result').innerText = total.toLocaleString();
         }
 
@@ -240,14 +231,12 @@
             document.getElementById('event-overlay').style.display = (m==='standard'||m==='day5'||m==='bow')?'flex':'none';
             document.getElementById('heal-overlay').style.display = (m==='healing')?'flex':'none';
             document.getElementById('hero-overlay').style.display = (m==='hero')?'flex':'none';
-            
             const pnl = document.getElementById('event-panel'); const tit = document.getElementById('event-title');
             if(m==='standard'){ pnl.className='panel ui-p'; tit.style.color='var(--purple)'; document.getElementById('aura-p').style.opacity='1'; runMath(); }
             else if(m==='day5'){ pnl.className='panel ui-b'; tit.style.color='var(--day5-blue)'; document.getElementById('aura-b').style.opacity='1'; runMath(); }
             else if(m==='bow'){ pnl.className='panel ui-r'; tit.style.color='var(--bow-red)'; document.getElementById('aura-r').style.opacity='1'; runMath(); }
             else if(m==='healing'){ document.getElementById('aura-h').style.opacity='1'; runHeal(); }
             else if(m==='hero'){ document.getElementById('aura-hero').style.opacity='1'; runHero(); }
-
             document.querySelectorAll('.overlay').forEach(o => { if(o.style.display==='flex') setTimeout(()=>o.classList.add('active'),10); });
         }
 
