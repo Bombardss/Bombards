@@ -136,21 +136,18 @@
         </div>
     </div>
 
-    <!-- HERO CALC (ORDER-BASED MATH) -->
+    <!-- HERO CALC -->
     <div id="hero-overlay" class="overlay">
         <div class="panel ui-hero">
             <h2 style="text-align: center; margin-bottom: 25px; letter-spacing: 5px; color: var(--gold); font-size: 2rem;">HERO SKILLS</h2>
-            
             <div class="hero-lbl-mini">Current Skill Levels (e.g. 1 1 1 1)</div>
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
                 <input type="number" id="c1" class="h-in" value="1" min="1" max="5"><input type="number" id="c2" class="h-in" value="1" min="1" max="5"><input type="number" id="c3" class="h-in" value="1" min="1" max="5"><input type="number" id="c4" class="h-in" value="1" min="1" max="5">
             </div>
-
             <div class="hero-lbl-mini">Target Skill Levels (e.g. 5 5 5 5)</div>
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
                 <input type="number" id="t1" class="h-in" value="5" min="1" max="5"><input type="number" id="t2" class="h-in" value="5" min="1" max="5"><input type="number" id="t3" class="h-in" value="5" min="1" max="5"><input type="number" id="t4" class="h-in" value="5" min="1" max="5">
             </div>
-
             <div style="text-align: center; border-top: 1px solid #333; padding-top: 30px;">
                 <button class="btn btn-std" style="border-color:var(--gold); color:var(--gold); width:100%; margin-bottom:20px;" onclick="runHero()">CALCULATE TOKENS</button>
                 <span id="hero-result" style="font-size: 4rem; color: var(--gold); font-weight: 900;">0</span>
@@ -177,9 +174,9 @@
         </div>
     </div>
 
-    <!-- TOTAL VIEW COUNTER (Cyan Theme) -->
+    <!-- REAL-TIME VISITOR COUNTER -->
     <div style="text-align: center; padding: 40px; opacity: 0.8;">
-        <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fbombardss.github.io%2FBombards%2F&count_bg=%2300F2FF&title_bg=%23303030&icon=&icon_color=%23E7E7E7&title=HUB+VIEWS&edge_flat=true" alt="Views">
+        <img src="https://komarev.com/ghpvc/?username=Bombardss&repo=Bombards&color=00f2ff&style=flat-square&label=HUB+VISITORS" alt="Views">
     </div>
 
     <script>
@@ -222,10 +219,14 @@
         function runHero() {
             const curSum = (parseInt(document.getElementById('c1').value)||1) + (parseInt(document.getElementById('c2').value)||1) + (parseInt(document.getElementById('c3').value)||1) + (parseInt(document.getElementById('c4').value)||1);
             const tarSum = (parseInt(document.getElementById('t1').value)||1) + (parseInt(document.getElementById('t2').value)||1) + (parseInt(document.getElementById('t3').value)||1) + (parseInt(document.getElementById('t4').value)||1);
-            const startIndex = Math.max(0, curSum - 4);
-            const endIndex = Math.min(HERO_STEP_COSTS.length, tarSum - 4);
+            const startIndex = curSum - 4;
+            const endIndex = tarSum - 4;
             let total = 0;
-            for (let i = startIndex; i < endIndex; i++) { total += HERO_STEP_COSTS[i]; }
+            if (endIndex > startIndex) {
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (HERO_STEP_COSTS[i]) total += HERO_STEP_COSTS[i];
+                }
+            }
             document.getElementById('hero-result').innerText = total.toLocaleString();
         }
 
