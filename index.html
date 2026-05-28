@@ -136,18 +136,21 @@
         </div>
     </div>
 
-    <!-- HERO CALC -->
+    <!-- HERO CALC (ORDER-BASED MATH) -->
     <div id="hero-overlay" class="overlay">
         <div class="panel ui-hero">
             <h2 style="text-align: center; margin-bottom: 25px; letter-spacing: 5px; color: var(--gold); font-size: 2rem;">HERO SKILLS</h2>
+            
             <div class="hero-lbl-mini">Current Skill Levels (e.g. 1 1 1 1)</div>
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
                 <input type="number" id="c1" class="h-in" value="1" min="1" max="5"><input type="number" id="c2" class="h-in" value="1" min="1" max="5"><input type="number" id="c3" class="h-in" value="1" min="1" max="5"><input type="number" id="c4" class="h-in" value="1" min="1" max="5">
             </div>
+
             <div class="hero-lbl-mini">Target Skill Levels (e.g. 5 5 5 5)</div>
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; margin-bottom: 30px;">
                 <input type="number" id="t1" class="h-in" value="5" min="1" max="5"><input type="number" id="t2" class="h-in" value="5" min="1" max="5"><input type="number" id="t3" class="h-in" value="5" min="1" max="5"><input type="number" id="t4" class="h-in" value="5" min="1" max="5">
             </div>
+
             <div style="text-align: center; border-top: 1px solid #333; padding-top: 30px;">
                 <button class="btn btn-std" style="border-color:var(--gold); color:var(--gold); width:100%; margin-bottom:20px;" onclick="runHero()">CALCULATE TOKENS</button>
                 <span id="hero-result" style="font-size: 4rem; color: var(--gold); font-weight: 900;">0</span>
@@ -174,9 +177,9 @@
         </div>
     </div>
 
-    <!-- REAL-TIME VISITOR COUNTER -->
+    <!-- STABLE VISITOR COUNTER (Works on GitHub Pages) -->
     <div style="text-align: center; padding: 40px; opacity: 0.8;">
-        <img src="https://komarev.com/ghpvc/?username=Bombardss&repo=Bombards&color=00f2ff&style=flat-square&label=HUB+VISITORS" alt="Views">
+        <img src="https://visitor-badge.laobi.icu/badge?page_id=bombardss.github.io.Bombards&color=00f2ff&style=flat-square" alt="Views">
     </div>
 
     <script>
